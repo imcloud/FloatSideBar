@@ -1,5 +1,6 @@
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
 
 version '1.0.0'
 group 'com.aceegg.sidebar'
@@ -28,6 +29,44 @@ publishing {
                         dependencyNode.appendNode('version', it.version)
                     }
                 }
+            }
+        }
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name 'FloatSideBar'
+            description 'A sidebar library for Android'
+            url siteUrl
+            inceptionYear '2017'
+
+            packaging 'aar'
+            groupId this.group
+            artifactId 'FloatSideBar'
+            version this.version
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                connection gitUrl
+                developerConnection 'aceegg.com'
+                url siteUrl
+
+            }
+            developers {
+                developer {
+                    id 'imcloud'
+                    name 'Sean Jin'
+                    email 'jwxhehdy@gmail.com'
+                }
+
             }
         }
     }
