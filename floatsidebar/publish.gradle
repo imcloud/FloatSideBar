@@ -10,8 +10,8 @@ def gitUrl = 'https://github.com/imcloud/FloatSideBar.git' // project git
 publishing {
     publications {
         Production(MavenPublication) {
-            artifact("$buildDir/outputs/aar/app-release.aar")
-            groupId
+            artifact("$buildDir/outputs/aar/floatsidebar-release.aar")
+            groupId this.group
             artifactId 'FloatSideBar'
             version this.version
 
