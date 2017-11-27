@@ -29,7 +29,7 @@ buildscript {
 在app/build.gradle
 
 ```
- implementation 'com.aceegg.sidebar:floatsidebar:1.0.2'
+ implementation 'com.aceegg.sidebar:floatsidebar:1.0.3'
 ```
 在layout里, 宽高必须match_parent
 ```
@@ -37,9 +37,22 @@ buildscript {
     android:id="@+id/side_bar"
     android:layout_width="match_parent" // must be use match_parent
     android:layout_height="match_parent" // must be use match_parent
-    app:index="@array/sidebar_index" // (option)
+    app:index="@array/sidebar_index"
+    app:index_margin_right="4dp"
+    app:index_text_color="#666666"
+    app:index_choose_color="#00a8ff"
+    app:index_text_size="14sp"
     />
 ```
+
+##### 属性说明
+属性 | 作用
+---- | ----
+index | 设置你的索引列表，引用资源文件中的字符串数组
+index_margin_right | 距右边屏幕的距离，单位dp
+index_text_color | 索引文字颜色
+index_text_size | 索引文字大小
+index_choose_color | 被选中的索引的文字颜色
 
 默认的array/sidebar_index，你也可以自定义一组在xml里赋值给view
 ```
