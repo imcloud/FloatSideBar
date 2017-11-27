@@ -2,5 +2,9 @@
 <resources>
     <declare-styleable name="FloatSideBar">
         <attr name="index" format="reference" />
+        <attr name="index_margin_right" format="dimension" />
+        <attr name="index_text_size" format="dimension" />
+        <attr name="index_text_color" format="color" />
+        <attr name="index_choose_color" format="color" />
     </declare-styleable>
 </resources>

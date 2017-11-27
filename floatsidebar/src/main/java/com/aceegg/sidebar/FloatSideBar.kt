@@ -65,28 +65,37 @@ class FloatSideBar : View {
 
     private var mIsBeingDragged: Boolean = false
 
+    private var mIndexMarginRight: Float = 0f
+    private var mIndexTextColor: Int = 0
+    private var mIndexChooseColor: Int = 0
+
     fun init(context: Context, attrs: AttributeSet?) {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FloatSideBar)
-        val indexArrayId = typedArray?.getResourceId(R.styleable.FloatSideBar_index,
+        val indexArrayId = typedArray.getResourceId(R.styleable.FloatSideBar_index,
             R.array.sidebar_index)
-        mIndexArray = context.resources.getStringArray(indexArrayId!!)
+        mIndexMarginRight = typedArray.getDimension(R.styleable.FloatSideBar_index_margin_right, 14f)
+        val indexTextSize = typedArray.getDimension(R.styleable.FloatSideBar_index_text_size, 0f)
+        mIndexTextColor = typedArray.getColor(R.styleable.FloatSideBar_index_text_color, Color.GRAY)
+        mIndexChooseColor = typedArray.getColor(R.styleable.FloatSideBar_index_choose_color, Color.rgb(0, 168, 255))
+        mIndexArray = context.resources.getStringArray(indexArrayId)
         typedArray.recycle()
-        mDefaultPaint.color = Color.GRAY
+        mDefaultPaint.color = mIndexTextColor
         mDefaultPaint.textAlign = CENTER
         mDefaultPaint.isAntiAlias = true
+        mDefaultPaint.textSize = indexTextSize
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         // 整体宽高
-        mWidth = w - dp2px(14)
+        mWidth = w - dp2px(mIndexMarginRight)
         mHeight = h - paddingTop - paddingBottom
         // 计算一个索引的高度 字体大小
         val length = getIndexLength()
         mIndexHeight = mHeight / length
         mDefaultPaint.textSize = mHeight * 0.60f / length
         // 计算索引绘制区域
-        mIndexRect.set(w - dp2px(16 * 2), 0, w, h)
+        mIndexRect.set(w - dp2px(16 * 2f), 0, w, h)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -158,7 +167,7 @@ class FloatSideBar : View {
 
             if (i == mChooseIndex) {
                 scale = Math.min(CHOOSE_SCALE, 1f + mPressTime * CHOOSE_SCALE/100)
-                mDefaultPaint.color = Color.rgb(0, 168, 255)
+                mDefaultPaint.color = mIndexChooseColor
             } else {
                 val maxPos = Math.abs( Math.pow((mY - indexY)/18.0, 2.0).toFloat() / mHeight * 8f)
                 scale = Math.max(1f, Math.min(UNCHOOSE_SCALE_MAX, mPressTime * UNCHOOSE_SCALE_MAX/115 + 1) - maxPos)
@@ -168,11 +177,11 @@ class FloatSideBar : View {
                 diffY = maxPos * 50f * (if (indexY >= mY) -1 else 1).toFloat()
                 diffX = maxPos * 100
 
-                mDefaultPaint.color = Color.GRAY
+                mDefaultPaint.color = mIndexTextColor
             }
             canvas?.save()
 
-            canvas?.scale(scale, scale, mWidth.toFloat() * 1.2f + diffX + Math.min(dp2px(100).toFloat(), (mInitDownX-mX)), indexY.toFloat() + diffY)
+            canvas?.scale(scale, scale, mWidth.toFloat() * 1.2f + diffX + Math.min(dp2px(100f).toFloat(), (mInitDownX-mX)), indexY.toFloat() + diffY)
             canvas?.drawText(mIndexArray[i], mWidth.toFloat(), indexY.toFloat(),
                 mDefaultPaint)
             canvas?.restore()
@@ -200,7 +209,7 @@ class FloatSideBar : View {
         return mIndexArray.size
     }
 
-    private fun dp2px(dp: Int): Int {
+    private fun dp2px(dp: Float): Int {
         return (context.resources.displayMetrics.density * dp + 0.5f).toInt()
     }
 
