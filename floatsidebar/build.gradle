@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.dokka-android'
 
 android {
     compileSdkVersion 26
@@ -14,7 +15,9 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
-
+    lintOptions {
+        abortOnError false
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -22,7 +25,20 @@ android {
         }
     }
 }
-
+dokka {
+    outputFormat = 'html'
+    outputDirectory = "$buildDir/javadoc"
+}
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:3.2.0'
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:${dokka_version}"
+    }
+}
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 

@@ -3,8 +3,8 @@ package com.sunallies.pvm.sidebar
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import com.sunallies.pvm.floatsidebar.SideBar
-import com.sunallies.pvm.floatsidebar.SideBar.OnIndexChooseListener
+import com.aceegg.sidebar.FloatSideBar
+import com.aceegg.sidebar.FloatSideBar.OnIndexChooseListener
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val sideBar = findViewById<SideBar>(R.id.side_bar)
+        val sideBar = findViewById<FloatSideBar>(R.id.side_bar)
 
         sideBar.setOnChooseIndexListener(object: OnIndexChooseListener {
             override fun chooseIndex(position: Int, index: String) {

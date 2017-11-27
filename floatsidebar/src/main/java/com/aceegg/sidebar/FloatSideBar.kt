@@ -1,4 +1,4 @@
-package com.sunallies.pvm.floatsidebar
+package com.aceegg.sidebar
 
 import android.content.Context
 import android.graphics.Canvas
@@ -16,7 +16,7 @@ import android.view.View
  * 索引
  * Created by jinwenxiu on 2017/11/21.
  */
-class SideBar : View {
+class FloatSideBar : View {
 
     interface OnIndexChooseListener {
         fun chooseIndex(position: Int, index: String)
@@ -66,8 +66,8 @@ class SideBar : View {
     private var mIsBeingDragged: Boolean = false
 
     fun init(context: Context, attrs: AttributeSet?) {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.SideBar)
-        val indexArrayId = typedArray?.getResourceId(R.styleable.SideBar_index,
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FloatSideBar)
+        val indexArrayId = typedArray?.getResourceId(R.styleable.FloatSideBar_index,
             R.array.sidebar_index)
         mIndexArray = context.resources.getStringArray(indexArrayId!!)
         typedArray.recycle()
@@ -79,12 +79,12 @@ class SideBar : View {
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         // 整体宽高
-        mWidth = w - dp2px(16)
+        mWidth = w - dp2px(14)
         mHeight = h - paddingTop - paddingBottom
         // 计算一个索引的高度 字体大小
         val length = getIndexLength()
         mIndexHeight = mHeight / length
-        mDefaultPaint.textSize = mHeight * 0.7f / length
+        mDefaultPaint.textSize = mHeight * 0.60f / length
         // 计算索引绘制区域
         mIndexRect.set(w - dp2px(16 * 2), 0, w, h)
     }

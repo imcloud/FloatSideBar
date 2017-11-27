@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="SideBar">
+    <declare-styleable name="FloatSideBar">
         <attr name="index" format="reference" />
     </declare-styleable>
 </resources>
