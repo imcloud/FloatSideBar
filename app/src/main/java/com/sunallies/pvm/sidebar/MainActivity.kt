@@ -22,5 +22,14 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+        val indexlist = ArrayList<String>()
+        indexlist.add("A")
+        indexlist.add("B")
+        indexlist.add("C")
+        indexlist.add("D")
+        indexlist.add("E")
+        indexlist.add("F")
+
+        sideBar.setIndexList(indexlist)
     }
 }

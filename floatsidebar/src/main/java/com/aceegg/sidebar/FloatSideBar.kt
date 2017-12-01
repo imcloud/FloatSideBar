@@ -8,8 +8,10 @@ import android.graphics.Paint.Align.CENTER
 import android.graphics.Rect
 import android.support.v4.widget.ViewDragHelper
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
+import kotlin.collections.ArrayList
 
 
 /**
@@ -37,7 +39,7 @@ class FloatSideBar : View {
 
     private var mChooseListener: OnIndexChooseListener? = null
 
-    private var mIndexArray: Array<out String> = emptyArray()
+    private var mIndexArray: Array<String> = emptyArray()
 
     private val mDefaultPaint: Paint = Paint()
 
@@ -73,10 +75,12 @@ class FloatSideBar : View {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.FloatSideBar)
         val indexArrayId = typedArray.getResourceId(R.styleable.FloatSideBar_index,
             R.array.sidebar_index)
-        mIndexMarginRight = typedArray.getDimension(R.styleable.FloatSideBar_index_margin_right, 14f)
+        mIndexMarginRight = typedArray.getDimension(R.styleable.FloatSideBar_index_margin_right,
+            14f)
         val indexTextSize = typedArray.getDimension(R.styleable.FloatSideBar_index_text_size, 0f)
         mIndexTextColor = typedArray.getColor(R.styleable.FloatSideBar_index_text_color, Color.GRAY)
-        mIndexChooseColor = typedArray.getColor(R.styleable.FloatSideBar_index_choose_color, Color.rgb(0, 168, 255))
+        mIndexChooseColor = typedArray.getColor(R.styleable.FloatSideBar_index_choose_color,
+            Color.rgb(0, 168, 255))
         mIndexArray = context.resources.getStringArray(indexArrayId)
         typedArray.recycle()
         mDefaultPaint.color = mIndexTextColor
@@ -92,10 +96,15 @@ class FloatSideBar : View {
         mHeight = h - paddingTop - paddingBottom
         // 计算一个索引的高度 字体大小
         val length = getIndexLength()
-        mIndexHeight = mHeight / length
-        mDefaultPaint.textSize = mHeight * 0.60f / length
+
+        if (mDefaultPaint.textSize == 0f) {
+            mDefaultPaint.textSize = minOf(mHeight * 0.60f / length, sp2px(12f).toFloat())
+        }
+        mIndexHeight = if (length == 0) 0 else minOf(mHeight / length,
+            24 + mDefaultPaint.textSize.toInt())
         // 计算索引绘制区域
-        mIndexRect.set(w - dp2px(16 * 2f), 0, w, h)
+        val topPadding = if (length == 0) 0 else (mHeight - mIndexHeight * length) / 2
+        mIndexRect.set(w - dp2px(16 * 2f), 0 + topPadding, w, h - topPadding)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -163,14 +172,15 @@ class FloatSideBar : View {
         var diffY = 0f
         var scale: Float
         for (item in mIndexArray) {
-            indexY = mIndexHeight * (i + 1) + paddingTop
+            indexY = mIndexHeight * (i + 1) + mIndexRect.top
 
             if (i == mChooseIndex) {
-                scale = Math.min(CHOOSE_SCALE, 1f + mPressTime * CHOOSE_SCALE/100)
+                scale = Math.min(CHOOSE_SCALE, 1f + mPressTime * CHOOSE_SCALE / 100)
                 mDefaultPaint.color = mIndexChooseColor
             } else {
-                val maxPos = Math.abs( Math.pow((mY - indexY)/18.0, 2.0).toFloat() / mHeight * 8f)
-                scale = Math.max(1f, Math.min(UNCHOOSE_SCALE_MAX, mPressTime * UNCHOOSE_SCALE_MAX/115 + 1) - maxPos)
+                val maxPos = Math.abs(Math.pow((mY - indexY) / 18.0, 2.0).toFloat() / mHeight * 8f)
+                scale = Math.max(1f, Math.min(UNCHOOSE_SCALE_MAX,
+                    mPressTime * UNCHOOSE_SCALE_MAX / 115 + 1) - maxPos)
                 if (!mIsBeingDragged) {
                     scale = 1f
                 }
@@ -181,7 +191,9 @@ class FloatSideBar : View {
             }
             canvas?.save()
 
-            canvas?.scale(scale, scale, mWidth.toFloat() * 1.2f + diffX + Math.min(dp2px(100f).toFloat(), (mInitDownX-mX)), indexY.toFloat() + diffY)
+            canvas?.scale(scale, scale,
+                mWidth.toFloat() * 1.2f + diffX + Math.min(dp2px(100f).toFloat(),
+                    (mInitDownX - mX)), indexY.toFloat() + diffY)
             canvas?.drawText(mIndexArray[i], mWidth.toFloat(), indexY.toFloat(),
                 mDefaultPaint)
             canvas?.restore()
@@ -210,7 +222,13 @@ class FloatSideBar : View {
     }
 
     private fun dp2px(dp: Float): Int {
-        return (context.resources.displayMetrics.density * dp + 0.5f).toInt()
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+            resources.displayMetrics).toInt()
+    }
+
+    private fun sp2px(sp: Float): Int {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp,
+            resources.displayMetrics).toInt()
     }
 
     private fun getMotionEventY(event: MotionEvent, activePointer: Int): Float {
@@ -244,7 +262,7 @@ class FloatSideBar : View {
     }
 
     private fun findChooseIndex(y: Float) {
-        val chooseIndex: Int = (y - paddingTop).toInt() / mIndexHeight
+        val chooseIndex: Int = (y - mIndexRect.top).toInt() / mIndexHeight
 
         if (mChooseIndex != chooseIndex) {
             if (chooseIndex >= 0 && chooseIndex < mIndexArray.size) {
@@ -256,5 +274,26 @@ class FloatSideBar : View {
 
     fun setOnChooseIndexListener(listener: OnIndexChooseListener) {
         mChooseListener = listener
+    }
+
+    fun setIndexList(indexList: Array<String>) {
+        mIndexArray = indexList
+        postInvalidate()
+    }
+
+    fun setIndexList(indexList: ArrayList<String>) {
+        mIndexArray = indexList.toTypedArray()
+
+        postInvalidate()
+    }
+
+    fun setIndexList(indexList: Array<IndexAble>) {
+        mIndexArray = emptyArray()
+
+        indexList.forEachIndexed { index, indexAble ->
+            mIndexArray[index] = indexAble.indexOfThisObject()
+        }
+
+        postInvalidate()
     }
 }
