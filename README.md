@@ -1,3 +1,4 @@
+![](https://img.shields.io/badge/gradle-1.1.0-green.svg)
 # FloatSideBar
 
 a sidebar like sony z1
@@ -29,7 +30,7 @@ buildscript {
 在app/build.gradle
 
 ```
- implementation 'com.aceegg.sidebar:floatsidebar:1.0.3'
+ implementation 'com.aceegg.sidebar:floatsidebar:1.1.0'
 ```
 在layout里, 宽高必须match_parent
 ```
